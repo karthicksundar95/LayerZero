@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LayerZero</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="privacy-icon">🔒</div>
+                <div class="brand">
+                    <h1>LayerZero</h1>
+                    <p class="tagline">Privacy at Layer Zero</p>
+                </div>
+            </div>
+            <p class="subtitle">The foundational privacy layer for AI</p>
+        </div>
+
+        <div class="status-section">
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Inactive on this page</span>
+            </div>
+            <p class="status-text" id="statusDescription">
+                Enable LayerZero to see the privacy icon in text fields and get AI-safe suggestions!
+            </p>
+        </div>
+
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon masked">M</div>
+                <div class="feature-content">
+                    <span class="feature-title">Masked</span>
+                    <span class="feature-desc">Replace sensitive data</span>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon rephrased">R</div>
+                <div class="feature-content">
+                    <span class="feature-title">Rephrased</span>
+                    <span class="feature-desc">Rewrite for privacy</span>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon synthetic">S</div>
+                <div class="feature-content">
+                    <span class="feature-title">Synthetic</span>
+                    <span class="feature-desc">Generate safe content</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button id="toggleExtension" class="toggle-btn">
+                <span class="toggle-text">Enable LayerZero</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

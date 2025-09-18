@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "LayerZero",
+  "version": "1.0",
+  "description": "Privacy at Layer Zero - The foundational privacy layer for AI",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:5001/*",
+    "http://127.0.0.1:5001/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LayerZero",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
