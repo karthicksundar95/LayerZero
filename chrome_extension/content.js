@@ -201,6 +201,29 @@ class LayerZero {
         showIcon();
     }
 
+    async checkBackgroundScript() {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('Background script not responding'));
+            }, 5000);
+            
+            chrome.runtime.sendMessage({ action: 'ping' }, (response) => {
+                clearTimeout(timeout);
+                
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                    return;
+                }
+                
+                if (response && response.success) {
+                    resolve(true);
+                } else {
+                    reject(new Error('Background script ping failed'));
+                }
+            });
+        });
+    }
+
     async handleShieldClick(input, icon) {
         console.log('Handling privacy icon click...');
         const text = this.getText(input);
@@ -219,6 +242,11 @@ class LayerZero {
         this.hideSuggestionPanel(input);
 
         try {
+            // First check if background script is alive
+            console.log('Checking background script...');
+            await this.checkBackgroundScript();
+            console.log('Background script is alive');
+            
             console.log('Getting suggestions for text:', text.substring(0, 50));
             const suggestions = await this.getSuggestions(text);
             console.log('Got suggestions:', suggestions);
@@ -240,11 +268,18 @@ class LayerZero {
             throw new Error('Chrome runtime not available');
         }
         
+        // Check if extension context is still valid
+        try {
+            chrome.runtime.getManifest();
+        } catch (error) {
+            throw new Error('Extension context invalidated. Please reload the page.');
+        }
+        
         return new Promise((resolve, reject) => {
-            // Add timeout to prevent hanging
+            // Extended timeout for AI processing (60 seconds)
             const timeout = setTimeout(() => {
                 reject(new Error('Request timeout - background script not responding'));
-            }, 10000);
+            }, 60000);
             
             chrome.runtime.sendMessage({
                 action: 'sanitize',
@@ -254,7 +289,14 @@ class LayerZero {
                 
                 if (chrome.runtime.lastError) {
                     console.error('Chrome runtime error:', chrome.runtime.lastError);
-                    reject(new Error(chrome.runtime.lastError.message));
+                    const errorMsg = chrome.runtime.lastError.message;
+                    
+                    if (errorMsg.includes('Extension context invalidated') || 
+                        errorMsg.includes('Receiving end does not exist')) {
+                        reject(new Error('Extension context invalidated. Please reload the page.'));
+                    } else {
+                        reject(new Error(chrome.runtime.lastError.message));
+                    }
                     return;
                 }
                 
@@ -282,7 +324,9 @@ class LayerZero {
     showDetailedError(error) {
         let message = 'Failed to get suggestions. ';
         
-        if (error.message.includes('Chrome runtime not available')) {
+        if (error.message.includes('Extension context invalidated')) {
+            message += 'Extension context was invalidated. Please reload the page and try again.';
+        } else if (error.message.includes('Chrome runtime not available')) {
             message += 'Extension context not available. Please reload the page.';
         } else if (error.message.includes('Request timeout')) {
             message += 'Background script not responding. Please check if Flask server is running.';
